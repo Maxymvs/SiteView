@@ -1,5 +1,5 @@
 import { Protect } from '@clerk/nextjs'
-import CustomClerkPricing from "@/components/custom-clerk-pricing";
+// import CustomClerkPricing from "@/components/custom-clerk-pricing";
 
 function UpgradeCard() {
   return (
@@ -7,10 +7,22 @@ function UpgradeCard() {
       <div className="mx-auto max-w-2xl space-y-4 text-center">
         <h1 className="text-center text-2xl font-semibold lg:text-3xl">Upgrade to a paid plan</h1>
         <p>This page is available on paid plans. Choose a plan that fits your needs.</p>
+        <p className="text-sm text-muted-foreground mt-4">
+          Note: Clerk Billing is not enabled yet. Visit{' '}
+          <a 
+            href="https://dashboard.clerk.com/last-active?path=billing/settings" 
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            Clerk Dashboard
+          </a>
+          {' '}to enable it.
+        </p>
       </div>
-      <div className="px-8 lg:px-12">
+      {/* <div className="px-8 lg:px-12">
         <CustomClerkPricing />
-      </div>
+      </div> */}
     </>
   )
 }

@@ -4,14 +4,17 @@ import Testimonials from "./testimonials";
 import CallToAction from "./call-to-action";
 import FAQs from "./faqs";
 import Footer from "./footer";
-import CustomClerkPricing from "@/components/custom-clerk-pricing";
+// import CustomClerkPricing from "@/components/custom-clerk-pricing";
 
 export default function Home() {
   return (
     <div>
       <HeroSection />
       <FeaturesOne />
-      <section className="bg-muted/50 py-16 md:py-32">
+      {/* TODO: Enable Clerk Billing to use pricing table
+          Visit: https://dashboard.clerk.com/last-active?path=billing/settings
+          Then uncomment the section below */}
+      {/* <section className="bg-muted/50 py-16 md:py-32">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-12 mx-auto max-w-2xl space-y-6 text-center">
               <h1 className="text-center text-4xl font-semibold lg:text-5xl">Pricing that Scales with You</h1>
@@ -19,7 +22,7 @@ export default function Home() {
           </div>
           <CustomClerkPricing />
         </div>
-      </section>
+      </section> */}
       <Testimonials />
       <CallToAction />
       <FAQs />
