@@ -22,7 +22,7 @@ This is a lean, execution-focused plan with clear engineering tasks, milestones,
 **Auth:** Clerk
 
 **Media Viewers:**
-- SuperSplat Viewer (splat files)
+- SuperSplat Viewer (PlayCanvas React API integration)
 - YouTube iframe (360 videos)
 - React Lightbox / custom lightbox (photo viewer)
 
@@ -153,13 +153,62 @@ Implement tables:
 
 ## 5. Detailed Task Breakdown
 
+### 5.1 `<SplatViewer />` Component Design (SuperSplat via PlayCanvas React)
+
+**Purpose**
+Encapsulate all Gaussian Splat rendering logic in a single React component that can be dropped into any visit detail or timeline card.
+
+**Responsibilities**
+- Initialize PlayCanvas React app and SuperSplat viewer
+- Load and display a splat from a given `splatUrl`
+- Manage loading and error states
+- Provide a graceful fallback for low-end or unsupported devices
+- Dispose/cleanup PlayCanvas resources on unmount
+
+**Props (MVP)**
+- `splatUrl: string` – Required. Public or signed URL to the splat file (`.ply` / `.sog`).
+- `height?: number | string` – Optional. Viewer height (default: 400px).
+- `className?: string` – Optional. Custom styling.
+
+**Internal State**
+- `isLoading: boolean`
+- `hasError: boolean`
+- `deviceSupported: boolean` (basic feature check: WebGL2 / reasonable GPU)
+
+**Behavior**
+1. On mount:
+   - Check for device support (WebGL2, reasonable performance hints).
+   - If unsupported → set `deviceSupported = false` and show fallback message.
+   - If supported → initialize PlayCanvas React app and load splat asset from `splatUrl`.
+2. While loading:
+   - Show skeleton/loader over the viewer area.
+3. On success:
+   - Render interactive orbit camera view around the splat.
+4. On error:
+   - Set `hasError = true` and show a text fallback (e.g., "Unable to load 3D view. Contact support or view orbit video instead.").
+5. On unmount:
+   - Dispose PlayCanvas app instance and free resources.
+
+**Integration Points**
+- Used inside the Client Portal timeline/visit card when `exterior_type === "splat"`.
+- Timeline/visit components should not know about PlayCanvas details – they only pass `splatUrl`.
+
+**Future Enhancements (Post-MVP)**
+- Camera presets (e.g., top/front/orbit buttons)
+- Screenshot capture (export current view as image)
+- Annotation markers in 3D space
+- Multi-splat comparison mode (pre-/post- drywall overlay)
+
+---
+
+
 ### Frontend
 - Layout structure: sidebar, dashboard, timeline
 - Auth flows (Admin, Operator, Client)
 - Project cards
 - Visit cards with conditional media rendering
 - Components: inputs, uploaders, lightbox, modals
-- SuperSplat integration
+- SuperSplat integration (via PlayCanvas React API)
 - Image gallery integration
 
 ### Backend (Convex)
