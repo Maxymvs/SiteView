@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.anthropic.com/claude-code-settings-schema.json",
+  "hooks": {
+    "PreToolUse": [],
+    "PostToolUse": [],
+    "UserPromptSubmit": [],
+    "Notification": [],
+    "Stop": []
+  },
+  "_comment": "This is a placeholder hooks configuration. Hooks are currently disabled to keep development simple during MVP phase. When ready to add automation, uncomment and customize the examples below.",
+  "_examples": {
+    "auto_format_after_edit": {
+      "description": "Automatically format TypeScript files after editing",
+      "hook": {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [[ \"$CLAUDE_FILE_PATHS\" =~ \\.(ts|tsx)$ ]]; then bunx prettier --write \"$CLAUDE_FILE_PATHS\" 2>/dev/null || true; fi"
+          }
+        ]
+      },
+      "addTo": "PostToolUse"
+    },
+    "block_dangerous_commands": {
+      "description": "Block dangerous bash commands like rm -rf or force push",
+      "hook": {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [[ \"$CLAUDE_TOOL_INPUT\" == *\"rm -rf\"* ]] || [[ \"$CLAUDE_TOOL_INPUT\" == *\"force\"*\"push\"* ]]; then echo 'BLOCKED: Dangerous command detected' && exit 2; fi"
+          }
+        ]
+      },
+      "addTo": "PreToolUse"
+    },
+    "run_tests_after_edit": {
+      "description": "Run tests after editing test files (requires testing framework setup)",
+      "hook": {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [[ \"$CLAUDE_FILE_PATHS\" =~ \\.test\\.(ts|tsx)$ ]]; then bun test \"$CLAUDE_FILE_PATHS\" 2>/dev/null || true; fi"
+          }
+        ]
+      },
+      "addTo": "PostToolUse"
+    },
+    "typecheck_on_edit": {
+      "description": "Run TypeScript type checking after editing TS files",
+      "hook": {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [[ \"$CLAUDE_FILE_PATHS\" =~ \\.(ts|tsx)$ ]]; then bunx tsc --noEmit 2>&1 | head -20 || true; fi"
+          }
+        ]
+      },
+      "addTo": "PostToolUse"
+    },
+    "warn_on_env_edit": {
+      "description": "Warn when editing .env files",
+      "hook": {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [[ \"$CLAUDE_FILE_PATHS\" == *\".env\"* ]]; then echo 'WARNING: Editing .env file - ensure no secrets are exposed' && exit 1; fi"
+          }
+        ]
+      },
+      "addTo": "PreToolUse"
+    }
+  },
+  "_documentation": {
+    "purpose": "Hooks allow automated validation, formatting, and safety checks during development",
+    "when_to_enable": [
+      "When you want automatic code formatting (Prettier)",
+      "When you want safety guards (block dangerous commands)",
+      "When you want automatic testing after edits",
+      "When you have established patterns to enforce"
+    ],
+    "how_to_enable": "Copy examples from _examples into the appropriate hook array (PreToolUse, PostToolUse, etc.)",
+    "environment_variables": [
+      "$CLAUDE_FILE_PATHS - File paths being modified (Edit/Write tools)",
+      "$CLAUDE_TOOL_INPUT - Full input to the tool being called",
+      "$CLAUDE_TOOL_NAME - Name of the tool being used"
+    ],
+    "exit_codes": [
+      "0 = Success, continue",
+      "1 = Warning, ask user to confirm",
+      "2 = Block, prevent action"
+    ],
+    "learn_more": "https://docs.anthropic.com/claude/docs/hooks"
+  }
+}
