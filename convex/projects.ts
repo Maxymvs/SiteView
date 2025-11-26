@@ -16,6 +16,23 @@ export const list = query({
   },
 });
 
+export const listWithClient = query({
+  args: {},
+  handler: async (ctx) => {
+    const projects = await ctx.db.query("projects").collect();
+    const projectsWithClient = await Promise.all(
+      projects.map(async (project) => {
+        const client = await ctx.db.get(project.clientId);
+        return {
+          ...project,
+          client: client ? { name: client.name, email: client.email } : null,
+        };
+      })
+    );
+    return projectsWithClient;
+  },
+});
+
 export const get = query({
   args: { id: v.id("projects") },
   handler: async (ctx, args) => {
